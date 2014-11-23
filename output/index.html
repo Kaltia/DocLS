@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+  <head>
+  <meta charset="UTF-8">
+    <title>Preview del tema por defecto</title>
+  </head>
+  <link rel="stylesheet" type="text/less" href="/assets/styles/default.less"></link>
+  <link rel="stylesheet" type="text/css" href="/assets/styles/bootstrap.css"></link>
+
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
+  <script src="/assets/scripts/highlight.pack.js"></script>
+
+  <script>hljs.initHighlightingOnLoad();</script>
+  <script type="text/javascript" src="/assets/scripts/less.js"></script>
+  <body>
+    <nav></nav>
+    <header></header>
+    <h1 id="title">Preview del tema por defecto</h1>
+      <div id="documentation">
+        <div class="tuple" id="tuple-1">
+          <div class="comment">
+            Generador de documentación de codigo LiveScript<br>
+            actualmente se encuentra en una fase muy temprana de desarrollo.
+            Por el momento solo es posible obtener comentarios inline, pero
+            se tiene pensado incluirlo para comentarios multi linea
+          </div>
+          <div class="code">
+            <pre><code class="LiveScript">
+fs = require 'fs'
+parsing = require './lib/parsing'
+
+getFile = ->
+  "docls.ls"
+
+
+fs.readFile do
+  getFile!
+  "utf-8"
+  (err, data) !->
+    return console.lof err if err
+    console.log parsing.generatorTuples data.split '\n'
+            </code></pre>
+          </div>
+        </div>
+        <div class="tuple" id="tuple-2">
+          <div class="comment">
+            El generador de tuplas es el encargado de generar
+            un array que contiene pares de la forma `[coment, code]` <br>
+            El generador delega la responsabilidad de obtener
+            las lines de comentario y codigo a los consumidores.
+            Ambos consumidores iteraran hasta obtener los comentarios
+            y el codigo respectivo para cada funcion y devolveran
+            sus valores junto con un indice que es la posicion donde
+            ya no encontro ocurrencias del valor.
+          </div>
+          <div class="code">
+            <pre><code class="LiveScript">
+comment = /^\s*\#.*$/g
+
+parsing = module.exports = {}
+
+parsing.generatorTuples = (lines) ->
+  index = 0
+  tuple = []
+  while index < lines.length - 1
+    [index, comment] = parsing.consumeComment lines, index
+    [index, code]  = parsing.consumeCode lines, index
+    tuple.push [comment, code]
+    /*break if index == lines.lenght*/
+  tuple
+
+parsing.consumeComment = (lines, index) ->
+  comments = ""
+  for i from index til lines.length
+    if comment.test lines[i] then comments += lines[i] + '\n' else  break
+  [i, comments]
+
+parsing.consumeCode = (lines, index) ->
+  code = ""
+  for i from index til lines.length
+    if not comment.test lines[i] then code +=  lines[i] + '\n' else  break
+  [i, code]
+          </code></pre>
+          </div>
+        </div>
+      </div>
+    <footer></footer>
+  </body>
+</html>
